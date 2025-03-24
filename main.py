@@ -8,19 +8,16 @@ from csv import DictReader
 with open('users.json', 'r') as f:
     users = json.load(f)
 
-# Составляем список лишних ключей словаря, описывающего пользователя
-keys_to_remove = list(users[0].keys())
-keys_to_remove.remove('name')
-keys_to_remove.remove('gender')
-keys_to_remove.remove('address')
-keys_to_remove.remove('age')
-
-# Проходим по всем словарям и удаляем лишние ключи вместе со значениями
-for row in users:
-    for key in keys_to_remove:
-        row.pop(key)
-    # Дополнительно добавляем в каждый словарь элемент 'books'
-    row['books'] = []
+# Создаем новый список календарей с юзерами в нужном формате
+users_new = []
+for user in users:
+    users_new.append({
+        "name": user["name"],
+        "gender": user["gender"],
+        "address": user["address"],
+        "age": user["age"],
+        "books": []
+    })
 
 # Открываем исходный csv-файл
 with open('books.csv', 'r') as f:
@@ -39,13 +36,13 @@ q = deque(books_list)
 # Создаем счетчик для того, чтобы в случае выдачи книг всем юзерам из списка,
 # начать выдавать дальше с начала списка
 COUNT = 0
-# Записываем книги в словарь пользователя в массив с ключом 'books'
+# Записываем книги в словарь пользователя в элемент с ключом 'books'
 while q:
     if COUNT > (len(users)-1):
         COUNT = 0
-    users[COUNT]['books'].append(q.popleft())
+    users_new[COUNT]['books'].append(q.popleft())
     COUNT += 1
 
-# Преобразуем массив users в result.json
+# Преобразуем массив users_new в result.json
 with open('result.json', 'w') as f:
-    json.dump(users, f, indent=2)
+    json.dump(users_new, f, indent=2)
